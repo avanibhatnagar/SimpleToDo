@@ -29,14 +29,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        items = new ArrayList<>();
+//        items = new ArrayList<>();
+        readItems();
         itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);//1st arg - reference to activity - here this - reference to main activity, 2nd - type of item the adapter will wrap - here android.R.layout, 3rd- item list created
         lvItems = (ListView) findViewById(R.id.lvItems);//reference to list view to wire adapter to it. but android already created a list view - so no new instance need to be created -resolve already existing instance using id assigned in design view // need to cast id to list view
         lvItems.setAdapter(itemsAdapter);//wire adapter to list view
 
         //mockdata
-        items.add("First item");
-        items.add("Second item");
+//        items.add("First item");
+//        items.add("Second item");
 
         setupListViewListener();
     }
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         String itemText = eNewItem.getText().toString();
         itemsAdapter.add(itemText);
         eNewItem.setText("");
+        writeItems();
         Toast.makeText(getApplicationContext(), "Item Added to list", Toast.LENGTH_SHORT).show(); //short message
     }
 
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("MainActivity","Item removed from the list: " + position);
                 items.remove(position);
                 itemsAdapter.notifyDataSetChanged();
+                writeItems();
                 return true;
             }
         });
@@ -77,6 +80,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void writeItems(){
-        
+        try {
+            FileUtils.writeLines(getDataFile(), items);
+        } catch (IOException e) {
+            Log.e("MainActivity", "Error writing file", e);
+        }
     }
 }
